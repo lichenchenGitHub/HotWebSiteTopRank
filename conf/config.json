@@ -1,0 +1,112 @@
+{
+  "name": "baiduTop",
+  "mongodb": {
+    "host": "10.4.1.7",
+    "port": "57017",
+    "authdb": "youku_list",
+    "db": "youku_list",
+    "user": "youku",
+    "passwd": "test1234567890",
+    "model_version": "v1"
+  },
+  "mongoose": {
+    "debug": false
+  },
+  "kue": {
+    "listen": true,
+    "host": "10.4.1.7",
+    "port": 9301
+  },
+  "redisConf": {
+    "queue": {
+      "host": "10.4.1.7",
+      "port": 6379,
+      "auth": "",
+      "options": {
+        "socket_keepalive": true
+      }
+    },
+    "filters": {
+      "host": "10.4.1.7",
+      "port": 6380,
+      "auth": "",
+      "options": {
+        "socket_keepalive": true
+      }
+    },
+    "keys": {
+      "host": "10.4.1.7",
+      "port": 6381,
+      "auth": "",
+      "options": {
+        "socket_keepalive": true
+      }
+    },
+    "tokens": {
+      "host": "10.4.1.7",
+      "port": 6379,
+      "auth": "",
+      "options": {
+        "socket_keepalive": true
+      }
+    }
+  },
+  "reportConf": {
+    "content": {
+      "url": "http://101.200.211.31:8080/vod_cms_core/youKuMedia/saveYouKuMedia",
+      "headers": {
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+      }
+    },
+    "download": {
+      "url": "http://101.200.211.31:8080/vod_cms_core/youKuMedia/saveDownloadStatus",
+      "headers": {
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+      }
+    }
+  },
+  "baiduTop": {
+    "urlList": [
+      "http://top.baidu.com/buzz?b=26&c=1&fr=topcategory_c1",
+      "http://top.baidu.com/buzz?b=4&c=2&fr=topcategory_c2",
+      "http://top.baidu.com/buzz?b=19&c=3&fr=topcategory_c3",
+      "http://top.baidu.com/buzz?b=23&c=5&fr=topcategory_c5"
+    ],
+    "headers": {
+      "Accept": "application/json",
+      "User-Agent": "Googlebot"
+    },
+    "parseContent": "/lib/baiduTopParse.js",
+    "dataType": 0
+  },
+  "youkuTop": {
+    "urlList": [
+        "https://index.api.youku.com/getData?num=700009&orderPro=vv&startindex=1&endindex=30&channelId=97&dateDim=d",
+      "https://index.api.youku.com/getData?num=700009&orderPro=vv&startindex=1&endindex=30&channelId=96&dateDim=d",
+      "https://index.api.youku.com/getData?num=700009&orderPro=vv&startindex=1&endindex=30&channelId=85&dateDim=d",
+      "https://index.api.youku.com/getData?num=700009&orderPro=vv&startindex=1&endindex=30&channelId=100&dateDim=d",
+      "https://index.api.youku.com/dataapi/getData?num=700009&orderPro=vv&startindex=1&endindex=30&channelId=84&dateDim=d"
+    ],
+    "headers": {
+      "Accept": "application/json",
+      "User-Agent":"Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.106 Safari/537.36"
+    },
+    "parseContent": "/lib/youkuTopParse.js",
+    "dataType": 1
+  },
+  "doubanTop": {
+    "urlList": [
+      "https://movie.douban.com/j/search_subjects?type=tv&tag=%E7%83%AD%E9%97%A8&sort=recommend&page_limit=100&page_start=0",
+      "https://movie.douban.com/j/search_subjects?type=movie&tag=%E7%83%AD%E9%97%A8&sort=recommend&page_limit=100&page_start=0"
+    ],
+    "headers": {
+      "Accept": "application/json",
+      "User-Agent": "Wandoujia Spider"
+    },
+    "parseContent": "/lib/doubanTopParse.js",
+    "dataType": 2
+  },
+  "dataDeal": "/lib/dataDeal.js"
+}

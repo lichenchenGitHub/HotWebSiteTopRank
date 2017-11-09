@@ -1,0 +1,100 @@
+extends layout
+
+block content
+    div
+        form.form-inline(id='searchForm', name='searchForm')
+            .form-group.col-xs-12.col-md-12
+                h4
+                    b 排名查询
+            .form-group.col-xs-10.col-md-2
+                input#date.form-control(placeholder='')
+            .form-group.col-xs-10.col-md-2
+                label.control-label
+                    select.form-control(style="width:100%"  id='category')
+            .form-group.col-xs-2.col-md-2
+                input.btn.btn-primary(type='submit', value='查询')
+        div(id="tableCollection" style='clear:both')
+        #myModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+            .modal-dialog
+                .modal-content
+                    .modal-body
+                        .progress
+                            .progress-bar(role='progressbar', aria-valuenow='100', aria-valuemin='0', aria-valuemax='100', style='width: 100%;')
+                                span.sr-only 100% 完成
+    script.
+        var sort = [{index: 97, value: "电视剧"},
+            {index: 96, value: "电影"},
+            {index: 85, value: "综艺"},
+            {index: 100, value: "动漫"},
+            {index: 84, value: "纪录片"}];
+        $(function () {
+            var html = ""
+            sort.forEach(function (item, index) {
+                html += "<option value='" + item.index + "'>" + item.value + "</option>";
+            })
+            $("#category").append(html);
+        })
+        $("#date").datetimepicker({
+            minView: 'month',
+            format: 'yyyy-mm-dd',
+            autoclose: true,
+            language: 'zh-CN',
+        })
+        $("#date").datetimepicker('setDate', new Date());
+        $("#searchForm").submit(function (e) {
+            $("#myModal").modal("show");
+            var postData = "category=" + $("#category").val();
+            var searchDate = $("#date").val();
+            if (searchDate != "") {
+                searchDate = new Date(searchDate).setHours(0, 0, 0, 0);
+                postData += "&ctime=" + searchDate;
+            }
+            $.ajax({
+                url: '/getDataByDay',
+                type: 'POST',
+                data: postData,
+                cache: false,
+                success: function (data) {
+                    if (data.code == 200) {
+                        $("#tableCollection").empty();
+                        var items = data.data;
+                        var html = "";
+                        items.forEach(function (item, index) {
+                            html += "<table style='margin-top:20px;margin-left:10px;float:left;width:30%' class='table table-condensed table-bordered table-striped table-hover'>";
+                            html += "<thead><tr><td colspan='4'><label>Site:" + item.site + "    Top: " + item.list.length + "</label></td></tr></thead>"
+                            if (item.site == "douban") {
+                                html += "<thead><tr><td>名称</td><td>排名</td><td>评分</td><td>是否新上</td></tr></thead>";
+                                item.list.forEach(function (content, index) {
+                                    html += "<tr><td>" + unescape(content.title) + "</td><td>" + content.currentRank + "<td>" + content.rate + "</td><td>" + content.is_new + "</td></tr>";
+                                });
+                            } else {
+                                html += "<thead><tr><td>名称</td><td>排名</td><td>搜索量/指数</td><td>趋势</td></tr></thead>"
+                                item.list.forEach(function (content, index) {
+                                    var trend = "";
+                                    if (parseInt(content.trend) > 0) {
+                                        trend = "上升";
+                                    } else if (parseInt(content.trend) < 0) {
+                                        trend = "下降";
+                                    } else {
+                                        trend = "--";
+                                    }
+                                    html += "<tr><td>" + unescape(content.title) + "</td><td>" + content.currentRank + "<td>" + content.searchVolume + "</td><td>" + trend + "</td></tr>";
+                                });
+                            }
+                            html += "</table>";
+                        });
+                        $("#tableCollection").append(html);
+                        $("#myModal").modal("hide");
+                    }
+                    else {
+                        $("#myModal").modal("hide");
+                        alert("获取数据出错");
+                    }
+                },
+                error: function (err) {
+                    $("#myModal").modal("hide");
+                    alert("请求出错");
+                }
+            });
+            e.preventDefault();
+        })
